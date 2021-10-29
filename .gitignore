@@ -1,0 +1,9 @@
+﻿################################################################################
+# Este arquivo .gitignore foi criado automaticamente pelo Microsoft(R) Visual Studio.
+################################################################################
+
+/API-Active-Directory/API-Active-Directory/bin/Debug/net5.0
+/API-Active-Directory/API-Active-Directory/obj/Debug/net5.0
+/API-Active-Directory/API-Active-Directory/obj
+/API-Active-Directory/.vs/API-Active-Directory/v16/.suo
+/API-Active-Directory/.vs/API-Active-Directory/DesignTimeBuild
