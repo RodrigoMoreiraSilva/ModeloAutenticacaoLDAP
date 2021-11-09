@@ -37,7 +37,6 @@ namespace API_Active_Directory
             });
 
             //Config LDAP
-            services.Configure<LdapConfig>(Configuration.GetSection("Ldap"));
             services.AddScoped<IAuthenticationService, LdapAuthenticationService>();
 
             //Rate Limit

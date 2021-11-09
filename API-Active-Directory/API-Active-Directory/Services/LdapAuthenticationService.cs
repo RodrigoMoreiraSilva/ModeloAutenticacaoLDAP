@@ -1,5 +1,6 @@
 ﻿using API_Active_Directory.Interfaces;
 using API_Active_Directory.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
@@ -14,18 +15,25 @@ namespace API_Active_Directory.Services
         private const string DisplayNameAttribute = "DisplayName";
         private const string SAMAccountNameAttribute = "SAMAccountName";
 
-        private readonly LdapConfig config;
+        private LdapConfig configLdap;
+        private readonly IConfiguration _config;
 
-        public LdapAuthenticationService(IOptions<LdapConfig> config)
+        public LdapAuthenticationService(IConfiguration config)
         {
-            this.config = config.Value;
+            this._config = config;
         }
 
-        public User Login(string userName, string password)
+        public (User, string) Login(string userName, string password, string LdapSection)
         {
+            configLdap = new LdapConfig
+            {
+                Path = _config.GetSection(LdapSection + ":Path").Value,
+                UserDomainName = _config.GetSection(LdapSection + ":UserDomainName").Value
+            };
+
             try
             {
-                using (DirectoryEntry entry = new DirectoryEntry(config.Path, config.UserDomainName + "\\" + userName, password))
+                using (DirectoryEntry entry = new DirectoryEntry(configLdap.Path, configLdap.UserDomainName + "\\" + userName, password))
                 {
                     using (DirectorySearcher searcher = new DirectorySearcher(entry))
                     {
@@ -41,21 +49,22 @@ namespace API_Active_Directory.Services
                             var displayName = result.Properties[DisplayNameAttribute];
                             var samAccountName = result.Properties[SAMAccountNameAttribute];
 
-                            return new User
+                            return (new User
                             {
                                 DisplayName = displayName == null || displayName.Count <= 0 ? null : displayName[0].ToString(),
                                 UserName = samAccountName == null || samAccountName.Count <= 0 ? null : samAccountName[0].ToString()
-                            };
+                            },
+                              null
+                            );
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                var message = ex;
-                return null;
+                return (null, ex.Message);
             }
-            return null;
+            return (null, null);
         }
     }
 }

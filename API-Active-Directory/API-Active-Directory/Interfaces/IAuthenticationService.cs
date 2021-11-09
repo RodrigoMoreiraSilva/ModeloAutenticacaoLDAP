@@ -8,6 +8,6 @@ namespace API_Active_Directory.Interfaces
 {
     public interface IAuthenticationService
     {
-        User Login(string userName, string password);
+        (User, string) Login(string userName, string password, string LdapSection);
     }
 }

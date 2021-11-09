@@ -23,18 +23,18 @@ namespace API_Active_Directory.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] Credentials credentials)
         {
-            if (credentials.Username.Equals("") || credentials.Password.Equals(""))
-                return Unauthorized();
+            if (string.IsNullOrWhiteSpace(credentials.Username) || string.IsNullOrWhiteSpace(credentials.Password) || string.IsNullOrWhiteSpace(credentials.LdapSection))
+                return BadRequest(new { message = "Dados inválidos." });
 
-            var user = authService.Login(credentials.Username,credentials.Password);
+            var user = authService.Login(credentials.Username,credentials.Password, credentials.LdapSection);
 
-            if (user != null)
+            if (user.Item2 == null && user.Item1 != null)
             {
                 return Ok();
             }
-            else
+            else 
             {
-                return Unauthorized();
+                return Unauthorized(new { message = user.Item2});
             }
         }
     }

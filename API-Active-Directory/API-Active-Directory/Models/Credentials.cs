@@ -9,5 +9,6 @@ namespace API_Active_Directory.Models
     {
         public string Username { get; set; }
         public string Password { get; set; }
+        public string LdapSection { get; set; }
     }
 }
